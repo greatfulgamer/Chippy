@@ -1,0 +1,48 @@
+# Chippy's Hermes Configuration
+# Copy to ~/.hermes/config.yaml on N100
+
+agent:
+  max_turns: 120
+  reasoning_effort: low
+  verbose: false
+
+model:
+  provider: ollama-launch
+  default: qwen3.6
+
+providers:
+  ollama-launch:
+    api: http://127.0.0.1:11434/v1
+    default_model: qwen3.6
+    models:
+      - qwen3.6
+      - qwen2.5-coder:1.5b-base
+      - llama3.2:latest
+    name: Ollama
+
+memory:
+  memory_enabled: true
+  memory_char_limit: 4000
+  flush_min_turns: 3
+  nudge_interval: 5
+  user_profile_enabled: true
+
+streaming:
+  enabled: true
+
+display:
+  streaming: true
+  show_reasoning: false
+
+terminal:
+  backend: local
+  timeout: 30
+  cwd: /home/chippy
+
+session_reset:
+  at_hour: 5
+  idle_minutes: 1440
+  mode: both
+
+updates:
+  pre_update_backup: false
