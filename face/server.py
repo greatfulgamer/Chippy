@@ -85,7 +85,20 @@ HTML = """<!DOCTYPE html>
     min-height: 60px;
     line-height: 1.5;
     transition: opacity 0.5s;
+    cursor: pointer;
   }
+  .speech:hover { border-color: #4a9eff; }
+  .voice-toggle {
+    color: #2a5a8a;
+    font-size: 10px;
+    margin-top: 8px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    user-select: none;
+  }
+  .voice-toggle:hover { opacity: 1; }
+  .voice-toggle.on { color: #4a9eff; opacity: 0.8; }
   .name {
     color: #2a6aae;
     font-size: 12px;
@@ -114,7 +127,8 @@ HTML = """<!DOCTYPE html>
     <div class="eye" id="right-eye"><div class="pupil" id="right-pupil"></div></div>
   </div>
   <div class="mouth" id="mouth"></div>
-  <div class="speech" id="speech">...</div>
+  <div class="speech" id="speech" onclick="speakCurrent()">...</div>
+  <div class="voice-toggle" id="voice-toggle" onclick="toggleVoice()">voice: off</div>
   <div class="status" id="status">connecting...</div>
 </div>
 <script>
@@ -129,6 +143,28 @@ HTML = """<!DOCTYPE html>
   let expression = 'neutral';
   let isTalking = false;
   let lastMsg = '';
+  let voiceEnabled = false;
+
+  function toggleVoice() {
+    voiceEnabled = !voiceEnabled;
+    document.getElementById('voice-toggle').textContent = voiceEnabled ? 'voice: on' : 'voice: off';
+    document.getElementById('voice-toggle').className = voiceEnabled ? 'voice-toggle on' : 'voice-toggle';
+  }
+
+  function speakCurrent() {
+    if (!voiceEnabled) return;
+    const msg = document.getElementById('speech').textContent;
+    if (!msg || msg === '...') return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(msg);
+    utterance.rate = 0.85;
+    utterance.pitch = 0.7;
+    utterance.volume = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'));
+    if (preferred) utterance.voice = preferred;
+    window.speechSynthesis.speak(utterance);
+  }
 
   function blink() {
     leftEye.classList.add('blink');
